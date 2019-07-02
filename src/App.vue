@@ -1,13 +1,16 @@
+//http://qaru.site/questions/14357074/how-to-get-the-element-width-and-height-immediately-when-it-resizing-in-vuejs
+//выше ссылка про refs и наблюдатели
+
 //ссылка на пример http://jsfiddle.net/Vlad_IT/qt64rouL/1/
 //Чтобы стилизовать инлайн-svg, я присвоил ему id (id="sample" )
 //и теперь в файле стилей могу через #sample воздействовать на него
 //например #sapmle rect {} воздействует на svg->rect
 <template>
-  <div id="app">
-    <svg id="sample" version="1.1" xmlns="http://www.w3.org/2000/svg" width="500px" height="400px">
-        <rect x=0 y=0 width="500px" height="400px"/>
+  <div id="app" class="wrapper" ref="loadprogresser" @resize='onResize'>
+    <svg id="sample" version="1.1" xmlns="http://www.w3.org/2000/svg"
+          width="100%" height="100%">
+        <rect x=0 y=0 width="100%" height="100%"/>
         <path :d="d" fill="transparent" stroke="black"/>
-        <polygon class="star" :points="points" transform="translate(50 50) "/>
     </svg>
     <h2>ПРИВЕТ!</h2>
   </div>
@@ -18,63 +21,66 @@ export default {
   name: 'app',
   data(){
     return {
-      //xy:[[255.1,1.1],  [240.4,31.4], [206.6,36.1], [230.9,61.1], [225.1,93.9],
-      //    [255.1,78.4], [284.4,93.9], [279.4,60.1], [303.6,36.4], [270.1,31.6]],
-      xy:[[0,0],  [0,50], [50,50], [50,0]],          
-      points: "",
       d:"M 0 0",
-      angle:0, //угол поворота
-      width:400, //ширина в которую надо вписать изображение
-      height:100,//высота в которую надо вписать изображение
-      timePoints:[]
+      Samples:0,//номер текущего сэмпла
+      maxSamples:400, //кол-во сэмплов в 100%-ах ширины
+      wrapHeight:100,//высота в которую надо вписать изображение
+      maxY:0,
+      scales:{
+        w:1, h:1
+      },
+      timePoints:[],
+      TimeM:100
     }
 
   },
-  created: function () {
+  mounted: function(){
+    this.getScales()
     this.updateStar()
   },
   methods:{
-    addTime:function ({time = 0}){
-      this.timePoints.push(time) //интересуют Int
+    getScales(){
+      const {width, height} = this.$refs.loadprogresser.getBoundingClientRect()
+      this.scales.w = width / this.maxSamples
+      this.wrapHeight = height
+      console.log(this.scales.w, width, this.maxSamples)
     },
-    getSVGTimePoints:function(){
+    onResize(){
+
+    },
+    getVScale(){
+      this.scales.h = (this.maxY == 0)? 0 : this.wrapHeight / this.maxY
+    },
+    //передаю значения выделяю максимум и выдаю шкалу относительно этого максимума
+    getYMax({value = 0}){
+      if (value > this.maxY) this.maxY = value
+      console.log(this.maxY)
+    },
+    addTime({time = 0}){
+      if (this.Samples < this.maxSamples) {
+        this.getYMax({value:time})
+        this.getVScale()
+        this.timePoints.push(time) //интересуют Int
+        this.Samples ++;
+        //console.log(this.Samples)
+      }
+    },
+    getSVGTimePoints(){
       //теперь создаю строку для Path
       let predY = 0
       let path = this.timePoints.reduce((str, item)=>{
-        let dY = item - predY
+        let dY = (item - predY) * this.scales.h
         predY = item
-        return str + `l 1 ${dY} `
+        return str + `l ${this.scales.w} ${dY} `
       },'M 0 0 ')
-      path +=`L ${this.timePoints.length} 0`// Z` контур можно не замыкать
+      path +=`L ${this.timePoints.length * this.scales.w} 0`// Z` контур можно не замыкать
       return path
     },
-    updateStar:function(){
-      this.addTime({time:(100*Math.random() | 0)})
+    updateStar(){
+      this.addTime({time:(this.TimeM*Math.random() | 0)})
+      this.TimeM *= 1.01
       this.d = this.getSVGTimePoints()
-      const rad = Math.PI/180
-      //увеличу все координаты на 1
       setTimeout(this.updateStar, 10)
-      let xy = this.xy.map((item)=>{
-        let ra = this.angle
-        let x = 0
-        let y = 0
-        x = item[0] * Math.cos(ra) - item[1] * Math.sin(ra)
-        y = item[0] * Math.sin(ra) + item[1] * Math.cos(ra)
-        item[0] = x
-        item[1] = y
-        //item[0] +=0.1
-        //item[1] +=0.1
-        return item
-      })
-      //теперь из пар xy сделаю строку 
-      let points = xy.reduce((sum, item)=>{
-        return sum+`${item[0]},${item[1]} `
-      },'')
-      //console.log(points)
-      this.points = points
-      this.angle +=0.0001
-      if (this.angle > 0.1) this.angle = 0
-      //console.log(this.angle)
     }
   },
   components: {
@@ -101,6 +107,13 @@ export default {
 
 #sample rect:hover {
 	fill: magenta;
+}
+
+.wrapper {
+  border: 1px red solid;
+  width: 400px;
+  height: 100px;
+  overflow: hidden;
 }
 
 .star {
