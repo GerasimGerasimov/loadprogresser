@@ -10,7 +10,9 @@
     <svg id="sample" version="1.1" xmlns="http://www.w3.org/2000/svg"
           width="100%" height="100%">
         <rect x=0 y=0 width="100%" height="100%"/>
-        <path :d="d" fill="transparent" stroke="black"/>
+        <g :transform="transform">
+          <path :d="d" fill="transparent" stroke="black"/>
+        </g>
     </svg>
     <h2>ПРИВЕТ!</h2>
   </div>
@@ -30,7 +32,8 @@ export default {
         w:1, h:1
       },
       timePoints:[],
-      TimeM:100
+      TimeM:100,
+      transform:'scale( 1, -1) translate(0,0) rotate(0)'
     }
 
   },
@@ -40,10 +43,12 @@ export default {
   },
   methods:{
     getScales(){
+      console.log('getScale')
       const {width, height} = this.$refs.loadprogresser.getBoundingClientRect()
       this.scales.w = width / this.maxSamples
       this.wrapHeight = height
       console.log(this.scales.w, width, this.maxSamples)
+      this.transform = `scale( 1, -1) translate(0,${-this.wrapHeight}) rotate(0)`
     },
     onResize(){
 
@@ -83,6 +88,9 @@ export default {
       setTimeout(this.updateStar, 10)
     }
   },
+  computed:{
+
+  },  
   components: {
   }
 }
