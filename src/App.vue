@@ -12,9 +12,8 @@
         <g :transform="transform">
           <path :d="d"/>
         </g>
-        <!--text x="50%" y="50%" dominant-baseline="central" text-anchor="middle">{{TextPrc}}</text -->
+        <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle">{{TextPrc}}</text>
     </svg>
-    <h2>{{TextPrc}}</h2>
   </div>
 </template>
 
@@ -68,7 +67,6 @@ export default {
         this.timePoints.push(time) //интересуют Int
         this.Samples ++;
         this.TextPrc = `${((this.Samples * 100)/this.maxSamples) | 0} %`
-        //console.log(this.Samples)
       }
     },
     getSVGTimePoints(){
@@ -120,29 +118,12 @@ export default {
 } 
 
 .wrapper {
-  position: relative;
-  font-size: 2em;
-  /*border: 1px red solid;*/
+  font-size: 64px;
+  border-left: 1px gray solid;
+  border-right: 1px gray solid;
   width: 200px;
   height: 150px;
-  line-height: 150px;
   overflow: hidden;
-  text-align: center;
-}
-
-.wrapper h2 {
-  opacity: 0.6;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  margin: 0 auto;
-  position: absolute;
-}
-
-.star {
-  stroke: #005000;
-  stroke-width: 4;
-  fill: none;
 }
 
 </style>
