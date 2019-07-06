@@ -9,12 +9,12 @@
   <div id="app" class="wrapper" ref="loadprogresser" @resize='onResize'>
     <svg id="sample" version="1.1" xmlns="http://www.w3.org/2000/svg"
           width="100%" height="100%">
-        <rect x=0 y=0 width="100%" height="100%"/>
         <g :transform="transform">
-          <path :d="d" fill="transparent" stroke="black"/>
+          <path :d="d"/>
         </g>
+        <!--text x="50%" y="50%" dominant-baseline="central" text-anchor="middle">{{TextPrc}}</text -->
     </svg>
-    <h2>ПРИВЕТ!</h2>
+    <h2>{{TextPrc}}</h2>
   </div>
 </template>
 
@@ -33,7 +33,8 @@ export default {
       },
       timePoints:[],
       TimeM:100,
-      transform:'scale( 1, -1) translate(0,0) rotate(0)'
+      transform:'scale( 1, -1) translate(0,0) rotate(0)',
+      TextPrc: '0%'
     }
 
   },
@@ -59,7 +60,6 @@ export default {
     //передаю значения выделяю максимум и выдаю шкалу относительно этого максимума
     getYMax({value = 0}){
       if (value > this.maxY) this.maxY = value
-      console.log(this.maxY)
     },
     addTime({time = 0}){
       if (this.Samples < this.maxSamples) {
@@ -67,6 +67,7 @@ export default {
         this.getVScale()
         this.timePoints.push(time) //интересуют Int
         this.Samples ++;
+        this.TextPrc = `${((this.Samples * 100)/this.maxSamples) | 0} %`
         //console.log(this.Samples)
       }
     },
@@ -78,14 +79,14 @@ export default {
         predY = item
         return str + `l ${this.scales.w} ${dY} `
       },'M 0 0 ')
-      path +=`L ${this.timePoints.length * this.scales.w} 0`// Z` контур можно не замыкать
+      path +=`L ${this.timePoints.length * this.scales.w} 0 `// Z` контур можно не замыкать
       return path
     },
     updateStar(){
       this.addTime({time:(this.TimeM*Math.random() | 0)})
       this.TimeM *= 1.01
       this.d = this.getSVGTimePoints()
-      setTimeout(this.updateStar, 10)
+      setTimeout(this.updateStar, 1)
     }
   },
   computed:{
@@ -106,22 +107,36 @@ export default {
   margin-top: 60px;
 }
 
-#sample rect {
-	fill: yellow;
+#sample path {
+  opacity: 0.5;
+	fill: lightgreen;
 	stroke: green;
-	stroke-width: 4;
+	stroke-width: 1;
 	transition: all 350ms;
 }
 
-#sample rect:hover {
-	fill: magenta;
-}
+#sample text {
+  opacity: 0.5;
+} 
 
 .wrapper {
-  border: 1px red solid;
-  width: 400px;
-  height: 100px;
+  position: relative;
+  font-size: 2em;
+  /*border: 1px red solid;*/
+  width: 200px;
+  height: 150px;
+  line-height: 150px;
   overflow: hidden;
+  text-align: center;
+}
+
+.wrapper h2 {
+  opacity: 0.6;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  margin: 0 auto;
+  position: absolute;
 }
 
 .star {
