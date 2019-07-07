@@ -6,7 +6,7 @@
 //и теперь в файле стилей могу через #sample воздействовать на него
 //например #sapmle rect {} воздействует на svg->rect
 <template>
-  <div id="app" class="wrapper" ref="loadprogresser">
+  <div class="wrapper" ref="loadprogresser">
     <svg class="wrapper__content" version="1.1" xmlns="http://www.w3.org/2000/svg"
           width="100%" height="100%">
         <g :transform="transform">
