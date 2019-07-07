@@ -7,7 +7,7 @@
 //например #sapmle rect {} воздействует на svg->rect
 <template>
   <div id="app" class="wrapper" ref="loadprogresser">
-    <svg id="sample" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    <svg class="wrapper__content" version="1.1" xmlns="http://www.w3.org/2000/svg"
           width="100%" height="100%">
         <g :transform="transform">
           <path :d="getPath"/>
@@ -19,7 +19,6 @@
 
 <script>
 export default {
-  name: 'app',
   props:{
     maxSamples: {//кол-во сэмплов в 100%-ах ширины
       type: Number,
@@ -96,7 +95,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .wrapper {
   width: 400px;/* размеры задаются в стилях прложения*/
@@ -108,14 +107,14 @@ export default {
   overflow: hidden;
 }
 
-#sample path {
+.wrapper__content path {
   opacity: 0.5;
 	fill: lightgreen;
 	stroke: green;
 	stroke-width: 1;
 }
 
-#sample text {
+.wrapper__content text {
   opacity: 0.5;
 } 
 </style>
