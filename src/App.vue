@@ -26,7 +26,7 @@ export default {
     this.updateStar()
   },
   methods:{
-    updateStar(){
+    async updateStar(){
       if (this.index < this.SamplesInProgresser) {
         this.index++;
         this.Point = {value:(this.TimeM*Math.random() | 0)}
