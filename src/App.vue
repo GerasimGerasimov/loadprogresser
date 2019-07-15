@@ -1,7 +1,5 @@
-//Если требуется реагировать на каждую передачу в props то надо передавать объект
 <template>
   <div>
-    <h1>Progresser</h1>
     <progresser
       class="progresser"
       :maxSamples = "SamplesInProgresser"
@@ -23,15 +21,15 @@ export default {
     }
   },
   created: function () {
-    this.updateStar()
+    this.update()
   },
   methods:{
-    async updateStar(){
+    async update(){
       if (this.index < this.SamplesInProgresser) {
         this.index++;
         this.Point = {value:(this.TimeM*Math.random() | 0)}
         this.TimeM *= 1.01
-        setTimeout(this.updateStar, 0)
+        setTimeout(this.update, 0)
       }
     }    
   },
