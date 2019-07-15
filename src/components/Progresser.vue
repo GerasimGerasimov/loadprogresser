@@ -1,10 +1,3 @@
-//http://qaru.site/questions/14357074/how-to-get-the-element-width-and-height-immediately-when-it-resizing-in-vuejs
-//выше ссылка про refs и наблюдатели
-
-//ссылка на пример http://jsfiddle.net/Vlad_IT/qt64rouL/1/
-//Чтобы стилизовать инлайн-svg, я присвоил ему id (id="sample" )
-//и теперь в файле стилей могу через #sample воздействовать на него
-//например #sapmle rect {} воздействует на svg->rect
 <template>
   <div class="wrapper" ref="loadprogresser">
     <svg class="wrapper__content" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -25,8 +18,7 @@ export default {
       default: 400
     },
     Point:{
-      value:0,
-      index:0
+      value:0
     }
   },
   data(){
@@ -35,10 +27,12 @@ export default {
       wrapHeight:100,//высота в которую надо вписать изображение
       maxY:0,//максимальная по Y величина (для вертикального масштабирования)
       scales:{
-        w:1, h:1
+        w:1,//масштабирование по горизонтали (расчитывается по ширине контейнера)
+        h:1 //масштабирование по вертикали
+            //(пересчитывается по максимальному Y и высоте контейнера)
       },
-      Points:[],
-      transform:'scale( 1, -1) translate(0,0) rotate(0)',
+      Points:[],//массив значений времени выполения операции (получены из Point.value)
+      transform:'scale( 1, -1) translate(0,0)',
       TextPrc: '0%'
     }
 
@@ -49,12 +43,13 @@ export default {
   methods:{
     getScales(){
       const {width, height} = this.$refs.loadprogresser.getBoundingClientRect()
+      //Коэф. Масштабирования по горизонтали
       this.scales.w = width / this.maxSamples
+      //трансформация координат Y от высоты контейнера
       this.wrapHeight = height
-      console.log(this.scales.w, width, this.maxSamples)
       this.transform = `scale( 1, -1) translate(0,${-this.wrapHeight}) rotate(0)`
     },
-    getVScale(){
+    getVScale(){//расчёт масштаба по вертикали
       this.scales.h = (this.maxY == 0)? 0 : this.wrapHeight / this.maxY
     },
     //передаю значения выделяю максимум и выдаю шкалу относительно этого максимума
@@ -89,8 +84,6 @@ export default {
       this.addValue({value:this.Point.value})
       return this.getSVGPoints()//this.d
     }
-  },  
-  components: {
   }
 }
 </script>
